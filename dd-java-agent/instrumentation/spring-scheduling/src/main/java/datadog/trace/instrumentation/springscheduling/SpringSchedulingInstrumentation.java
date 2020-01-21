@@ -2,17 +2,28 @@
 
 package datadog.trace.instrumentation.springscheduling;
 
-import static java.util.Collections.singletonMap;
-import static net.bytebuddy.matcher.ElementMatchers.*;
-
 import com.google.auto.service.AutoService;
 import datadog.trace.agent.tooling.Instrumenter;
-import datadog.trace.api.Trace;
-import java.util.Map;
+import datadog.trace.api.DDTags;
+import datadog.trace.instrumentation.api.AgentScope;
+import datadog.trace.instrumentation.api.AgentSpan;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
+
+import java.util.Map;
+
+import static datadog.trace.instrumentation.api.AgentTracer.activateSpan;
+import static datadog.trace.instrumentation.api.AgentTracer.activeSpan;
+import static datadog.trace.instrumentation.api.AgentTracer.startSpan;
+import static datadog.trace.instrumentation.springscheduling.SpringSchedulingDecorator.DECORATE;
+import static java.util.Collections.singletonMap;
+import static net.bytebuddy.matcher.ElementMatchers.isConstructor;
+import static net.bytebuddy.matcher.ElementMatchers.isInterface;
+import static net.bytebuddy.matcher.ElementMatchers.named;
+import static net.bytebuddy.matcher.ElementMatchers.not;
+import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 @AutoService(Instrumenter.class)
 public final class SpringSchedulingInstrumentation extends Instrumenter.Default {
@@ -53,14 +64,29 @@ public final class SpringSchedulingInstrumentation extends Instrumenter.Default 
   public static class RunnableWrapper implements Runnable {
     private final Runnable runnable;
 
-    private RunnableWrapper(final Runnable runnable) {
+    public RunnableWrapper(final Runnable runnable) {
       this.runnable = runnable;
     }
 
-    @Trace
     @Override
     public void run() {
-      runnable.run();
+      final AgentSpan span = startSpan("");
+      DECORATE.afterStart(span);
+
+      try (final AgentScope scope = activateSpan(span, false)) {
+        activeSpan().setTag(DDTags.SERVICE_NAME, "test");
+        DECORATE.afterStart(span);
+        scope.setAsyncPropagation(true);
+
+        try {
+          runnable.run();
+        } catch (final Throwable throwable) {
+          DECORATE.onError(span, throwable);
+          DECORATE.beforeFinish(span);
+          span.finish();
+          throw throwable;
+        }
+      }
     }
 
     public static Runnable wrapIfNeeded(final Runnable task) {

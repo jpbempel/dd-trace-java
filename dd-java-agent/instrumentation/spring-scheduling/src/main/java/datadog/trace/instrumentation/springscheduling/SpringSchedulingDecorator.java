@@ -3,9 +3,11 @@
 package datadog.trace.instrumentation.springscheduling;
 
 import datadog.trace.agent.decorator.BaseDecorator;
+import lombok.extern.slf4j.Slf4j;
 
-public final class SpringSchedulingDecorator extends BaseDecorator {
-  public static final SpringSchedulingDecorator DECORATOR = new SpringSchedulingDecorator();
+@Slf4j
+public class SpringSchedulingDecorator extends BaseDecorator {
+  public static final SpringSchedulingDecorator DECORATE = new SpringSchedulingDecorator();
 
   private SpringSchedulingDecorator() {}
 

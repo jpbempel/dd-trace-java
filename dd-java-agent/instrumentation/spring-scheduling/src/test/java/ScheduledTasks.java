@@ -14,59 +14,32 @@
  * limitations under the License.
  */
 
-import datadog.trace.api.DDTags;
-import datadog.trace.instrumentation.api.AgentScope;
-import datadog.trace.instrumentation.api.AgentSpan;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+// import datadog.trace.api.DDTags;
+// import datadog.trace.instrumentation.api.AgentScope;
+// import datadog.trace.instrumentation.api.AgentSpan;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
-
-import static datadog.trace.instrumentation.api.AgentTracer.activateSpan;
-import static datadog.trace.instrumentation.api.AgentTracer.activeSpan;
-import static datadog.trace.instrumentation.api.AgentTracer.startSpan;
-import static datadog.trace.instrumentation.trace_annotation.TraceDecorator.DECORATE;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @Component
-public class ScheduledTasks {
+public class ScheduledTasks implements Runnable {
 
-  private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
+  private final CountDownLatch latch = new CountDownLatch(1);
+  // blocks one thread until the other completes
+  // one thread for test
+  // one thread for run method
 
-  private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
-  public static boolean reportCurrentTimeExecuted = false;
-
-  @Scheduled(fixedRate = 5000)
-  //  @Trace
-  public void reportCurrentTime() {
-    //    log.info("The time is now {}", dateFormat.format(new Date()));
-    // test that the body of method has been executed
-    // create span
-
-    //    activeSpan().setTag(DDTags.SERVICE_NAME, "test");
-    reportCurrentTimeExecuted = true;
+  // when scheduled job runs, we want to add @Trace through the regular API way
+  @Scheduled(initialDelay = 2, fixedRate = 5000)
+  @Override
+  public void run() {
+    latch.countDown();
   }
 
-  public void runSpan() {
-    // create span
-    final AgentSpan span = startSpan("currentTime");
-    DECORATE.afterStart(span);
-
-    try (final AgentScope scope = activateSpan(span, false)) {
-      activeSpan().setTag(DDTags.SERVICE_NAME, "test");
-      DECORATE.afterStart(span);
-      scope.setAsyncPropagation(true);
-
-      try {
-        reportCurrentTime();
-      } catch (final Throwable throwable) {
-        DECORATE.onError(span, throwable);
-        DECORATE.beforeFinish(span);
-        span.finish();
-        throw throwable;
-      }
-    }
+  public void blockUntilExecute() throws InterruptedException {
+    latch.await(5, TimeUnit.SECONDS);
   }
 }
