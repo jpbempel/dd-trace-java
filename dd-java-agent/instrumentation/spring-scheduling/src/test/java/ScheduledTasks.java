@@ -28,11 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class ScheduledTasks implements Runnable {
 
   private final CountDownLatch latch = new CountDownLatch(1);
-  // blocks one thread until the other completes
-  // one thread for test
-  // one thread for run method
 
-  // when scheduled job runs, we want to add @Trace through the regular API way
   @Scheduled(initialDelay = 2, fixedRate = 5000)
   @Override
   public void run() {

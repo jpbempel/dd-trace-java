@@ -4,7 +4,6 @@ package datadog.trace.instrumentation.springscheduling;
 
 import com.google.auto.service.AutoService;
 import datadog.trace.agent.tooling.Instrumenter;
-import datadog.trace.api.DDTags;
 import datadog.trace.instrumentation.api.AgentScope;
 import datadog.trace.instrumentation.api.AgentSpan;
 import net.bytebuddy.asm.Advice;
@@ -15,7 +14,6 @@ import net.bytebuddy.matcher.ElementMatcher;
 import java.util.Map;
 
 import static datadog.trace.instrumentation.api.AgentTracer.activateSpan;
-import static datadog.trace.instrumentation.api.AgentTracer.activeSpan;
 import static datadog.trace.instrumentation.api.AgentTracer.startSpan;
 import static datadog.trace.instrumentation.springscheduling.SpringSchedulingDecorator.DECORATE;
 import static java.util.Collections.singletonMap;
@@ -70,22 +68,22 @@ public final class SpringSchedulingInstrumentation extends Instrumenter.Default 
 
     @Override
     public void run() {
-      final AgentSpan span = startSpan("");
+      final AgentSpan span = startSpan("scheduled.call");
       DECORATE.afterStart(span);
 
       try (final AgentScope scope = activateSpan(span, false)) {
-        activeSpan().setTag(DDTags.SERVICE_NAME, "test");
-        DECORATE.afterStart(span);
+        DECORATE.onRun(span, runnable);
         scope.setAsyncPropagation(true);
 
         try {
           runnable.run();
         } catch (final Throwable throwable) {
           DECORATE.onError(span, throwable);
-          DECORATE.beforeFinish(span);
-          span.finish();
           throw throwable;
         }
+      } finally {
+        DECORATE.beforeFinish(span);
+        span.finish();
       }
     }
 
