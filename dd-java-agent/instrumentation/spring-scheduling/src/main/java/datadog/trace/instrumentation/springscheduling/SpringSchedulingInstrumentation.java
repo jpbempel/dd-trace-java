@@ -1,5 +1,3 @@
-// This file includes software developed at SignalFx
-
 package datadog.trace.instrumentation.springscheduling;
 
 import com.google.auto.service.AutoService;
@@ -48,7 +46,7 @@ public final class SpringSchedulingInstrumentation extends Instrumenter.Default 
   public Map<? extends ElementMatcher<? super MethodDescription>, String> transformers() {
     return singletonMap(
         isConstructor().and(takesArgument(0, Runnable.class)),
-        SpringSchedulingInstrumentation.class.getName() + "$RepositoryFactorySupportAdvice");
+        SpringSchedulingInstrumentation.class.getName() + "$SpringSchedulingAdvice");
   }
 
   public static class SpringSchedulingAdvice {
@@ -62,7 +60,7 @@ public final class SpringSchedulingInstrumentation extends Instrumenter.Default 
   public static class RunnableWrapper implements Runnable {
     private final Runnable runnable;
 
-    public RunnableWrapper(final Runnable runnable) {
+    private RunnableWrapper(final Runnable runnable) {
       this.runnable = runnable;
     }
 
