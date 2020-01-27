@@ -4,9 +4,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
 @EnableScheduling
-public class TriggerTasksConfig {
+public class TriggerTaskConfig {
   @Bean
-  public TriggerTasks triggerTasks() {
-    return new TriggerTasks();
+  public TriggerTask triggerTasks() {
+    return new TriggerTask();
   }
 }

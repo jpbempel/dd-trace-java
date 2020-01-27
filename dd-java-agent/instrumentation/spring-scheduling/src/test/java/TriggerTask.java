@@ -1,3 +1,9 @@
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 /*
  * Copyright 2012-2015 the original author or authors.
  *
@@ -13,23 +19,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // import datadog.trace.api.DDTags;
 // import datadog.trace.instrumentation.api.AgentScope;
 // import datadog.trace.instrumentation.api.AgentSpan;
 
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 @Component
-public class ScheduledTasks implements Runnable {
+public class TriggerTask implements Runnable {
+
+  public TriggerTask() {
+    System.out.println("in the ScheduledTasks constructor");
+  }
 
   private final CountDownLatch latch = new CountDownLatch(1);
 
-  @Scheduled(initialDelay = 2, fixedRate = 5000)
+  @Scheduled(cron = "0/5 * * * * *")
   @Override
   public void run() {
     latch.countDown();

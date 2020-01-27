@@ -4,9 +4,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
 @EnableScheduling
-public class ScheduledTasksConfig {
+public class IntervalTaskConfig {
   @Bean
-  public ScheduledTasks scheduledTasks() {
-    return new ScheduledTasks();
+  public IntervalTask scheduledTasks() {
+    return new IntervalTask();
   }
 }
