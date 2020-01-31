@@ -61,6 +61,7 @@ public class ContinuableScope implements DDScope, TraceScope {
 
   @Override
   public void close() {
+    log.debug("Stacktrace", new Exception());
     if (null != continuation) {
       spanUnderScope.context().getTrace().cancelContinuation(continuation);
     }
@@ -146,6 +147,7 @@ public class ContinuableScope implements DDScope, TraceScope {
         final ContinuableScope scope =
             new ContinuableScope(scopeManager, openCount, this, spanUnderScope, finishOnClose);
         log.debug("Activating continuation {}, scope: {}", this, scope);
+        log.debug("Stacktrace", new Exception());
         return scope;
       } else {
         log.debug(
