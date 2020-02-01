@@ -25,7 +25,7 @@ public class IntervalTask implements Runnable {
 
   private final CountDownLatch latch = new CountDownLatch(1);
 
-  @Scheduled(initialDelay = 2, fixedRate = 5000)
+  @Scheduled(fixedRate = 5000)
   @Override
   public void run() {
     latch.countDown();

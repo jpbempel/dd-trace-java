@@ -1,9 +1,3 @@
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 /*
  * Copyright 2012-2015 the original author or authors.
  *
@@ -19,9 +13,11 @@ import java.util.concurrent.TimeUnit;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// import datadog.trace.api.DDTags;
-// import datadog.trace.instrumentation.api.AgentScope;
-// import datadog.trace.instrumentation.api.AgentSpan;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 @Component
 public class TriggerTask implements Runnable {
