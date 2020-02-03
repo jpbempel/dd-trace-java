@@ -2,13 +2,13 @@ muzzle {
   pass {
     group = 'org.springframework'
     module = 'spring-context'
-    versions = "[3.2.3.RELEASE,]"
+    versions = "[3.2.4.RELEASE,]"
     assertInverse = false
   }
 }
 
 apply from: "${rootDir}/gradle/java.gradle"
 dependencies {
-  compileOnly group: 'org.springframework', name: 'spring-context', version: '3.2.3.RELEASE'
-  testCompile group: 'org.springframework', name: 'spring-context', version: '3.2.3.RELEASE'
+  compileOnly group: 'org.springframework', name: 'spring-context', version: '3.2.4.RELEASE'
+  testCompile group: 'org.springframework', name: 'spring-context', version: '3.2.4.RELEASE'
 }

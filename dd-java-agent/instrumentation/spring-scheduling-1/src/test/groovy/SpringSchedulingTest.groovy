@@ -11,10 +11,10 @@ class SpringSchedulingTest extends AgentTestRunner {
 
     TEST_WRITER.clear()
 
-    task.blockUntilExecute();
+    task.blockUntilExecute()
 
     expect:
-    assert task != null;
+    assert task != null
     assertTraces(1) {
       trace(0, 1) {
         span(0) {
@@ -38,10 +38,10 @@ class SpringSchedulingTest extends AgentTestRunner {
 
     TEST_WRITER.clear()
 
-    task.blockUntilExecute();
+    task.blockUntilExecute()
 
     expect:
-    assert task != null;
+    assert task != null
     assertTraces(1) {
       trace(0, 1) {
         span(0) {
