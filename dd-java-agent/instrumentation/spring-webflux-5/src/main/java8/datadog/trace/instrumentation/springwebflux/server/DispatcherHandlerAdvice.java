@@ -7,9 +7,7 @@ import static datadog.trace.instrumentation.springwebflux.server.SpringWebfluxHt
 
 import datadog.trace.instrumentation.api.AgentScope;
 import datadog.trace.instrumentation.api.AgentSpan;
-import java.util.function.Function;
 import net.bytebuddy.asm.Advice;
-import org.reactivestreams.Publisher;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -45,9 +43,7 @@ public class DispatcherHandlerAdvice {
       @Advice.Argument(0) final ServerWebExchange exchange,
       @Advice.Return(readOnly = false) Mono<Object> mono) {
     if (throwable == null && mono != null) {
-      final Function<? super Mono<Object>, ? extends Publisher<Object>> function =
-          ReactorCoreAdviceUtils.finishSpanNextOrError();
-      mono = ReactorCoreAdviceUtils.setPublisherSpan(mono, scope.span());
+      mono = AdviceUtils.setPublisherSpan(mono, scope.span());
     } else if (throwable != null) {
       AdviceUtils.finishSpanIfPresent(exchange, throwable);
     }
