@@ -2,13 +2,19 @@ import datadog.trace.agent.test.AgentTestRunner
 import datadog.trace.instrumentation.api.Tags
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
+
 class SpringSchedulingTest extends AgentTestRunner {
+
+  Lock lock = new ReentrantLock()
 
   def "schedule interval test"() {
     setup:
     def context = new AnnotationConfigApplicationContext(IntervalTaskConfig)
     def task = context.getBean(IntervalTask)
-
+    
+    lock.lock()
     TEST_WRITER.clear()
 
     task.blockUntilExecute()
@@ -29,6 +35,9 @@ class SpringSchedulingTest extends AgentTestRunner {
         }
       }
     }
+    lock.unlock()
+
+
   }
 
   def "schedule trigger test according to cron expression"() {
@@ -36,6 +45,7 @@ class SpringSchedulingTest extends AgentTestRunner {
     def context = new AnnotationConfigApplicationContext(TriggerTaskConfig)
     def task = context.getBean(TriggerTask)
 
+    lock.lock()
     TEST_WRITER.clear()
 
     task.blockUntilExecute()
@@ -56,5 +66,6 @@ class SpringSchedulingTest extends AgentTestRunner {
         }
       }
     }
+    lock.unlock()
   }
 }
