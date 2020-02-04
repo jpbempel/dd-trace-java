@@ -8,7 +8,17 @@ muzzle {
 }
 
 apply from: "${rootDir}/gradle/java.gradle"
+
+apply plugin: 'org.unbroken-dome.test-sets'
+
+testSets {
+  latestDepTest {
+    dirName = 'test'
+  }
+}
+
 dependencies {
   compileOnly group: 'org.springframework', name: 'spring-context', version: '3.2.4.RELEASE'
   testCompile group: 'org.springframework', name: 'spring-context', version: '3.2.4.RELEASE'
+  latestDepTestCompile group: 'org.springframework', name: 'spring-context', version: '+'
 }
